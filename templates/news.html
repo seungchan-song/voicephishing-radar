@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>보이스피싱 뉴스</h2>
+
+<p>
+  <a href="/news">전체</a>
+  {% for tag in tags %}
+  | <a href="/news?tag={{ tag }}">{% if tag == current %}<b>{{ tag }}</b>{% else %}{{ tag }}{% endif %}</a>
+  {% endfor %}
+</p>
+
+{% if error %}
+<p class="banner">{{ error }}</p>
+{% endif %}
+
+<ul>
+  {% for a in articles %}
+  <li>
+    <a href="{{ a.link }}" target="_blank">{{ a.title }}</a><br>
+    {{ a.date }} · {{ a.source }} · {{ a.tags | join(", ") }}
+  </li>
+  {% else %}
+  <li>아직 저장된 기사가 없습니다. python collect_news.py 를 먼저 실행하세요.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

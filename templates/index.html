@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+{% if result.is_fake %}
+<p class="banner">⚠️ 가짜 데이터입니다. 화면 확인용이며 발표에 쓰면 안 됩니다.</p>
+{% endif %}
+
+<div class="cards">
+  <div class="card">
+    <p>{{ result.stats_year }}년 피해 건수</p>
+    <h3>{{ "{:,}".format(result.summary.total_count) }}건</h3>
+  </div>
+  <div class="card">
+    <p>{{ result.stats_year }}년 피해 금액</p>
+    <h3>{{ eok(result.summary.total_amount) }}</h3>
+  </div>
+  <div class="card">
+    <p>분석한 뉴스 ({{ result.period.start }} ~ {{ result.period.end }})</p>
+    <h3>{{ result.summary.total_news }}건</h3>
+  </div>
+</div>
+
+<h2>요즘 많이 보도된 수법 TOP 3</h2>
+<ol>
+  {% for m in result.top_methods %}
+  <li>
+    <b>{{ m.name }}</b> (기사 {{ m.count }}건)<br>
+    <a href="{{ m.sample.link }}" target="_blank">{{ m.sample.title }}</a> {{ m.sample.date }}
+  </li>
+  {% endfor %}
+</ol>
+
+<h2>인사이트</h2>
+<ul>
+  {% for text in result.insights %}
+  <li>{{ text }}</li>
+  {% endfor %}
+</ul>
+
+<h2>그래프</h2>
+{% for path in charts %}
+<img src="{{ url_for('static', filename=path) }}" width="450">
+{% else %}
+<p>아직 그래프가 없습니다. python charts.py 를 실행하면 여기에 나타납니다.</p>
+{% endfor %}
+
+<h2>{{ result.stats_year }}년 연령대별 피해</h2>
+<table>
+  <tr><th>연령대</th><th>건수</th><th>비율</th></tr>
+  {% for row in result.by_age %}
+  <tr><td>{{ row.group }}</td><td>{{ "{:,}".format(row.count) }}</td><td>{{ row.ratio }}%</td></tr>
+  {% endfor %}
+</table>
+
+<h2>{{ result.stats_year }}년 시도청별 피해 (금액 순)</h2>
+<table>
+  <tr><th>시도청</th><th>건수</th><th>피해 금액</th><th>1건당 피해액</th></tr>
+  {% for row in result.by_region %}
+  <tr>
+    <td>{{ row.group }}</td>
+    <td>{{ "{:,}".format(row.count) }}</td>
+    <td>{{ eok(row.amount) }}</td>
+    <td>{{ "{:,}".format(row.amount_per_case) }}원</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<p>분석 시각: {{ result.generated_at }}</p>
+{% endblock %}

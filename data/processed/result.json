@@ -1,0 +1,54 @@
+{
+  "is_fake": true,
+  "generated_at": "2026-09-29 09:00",
+  "stats_year": 2025,
+  "summary": {"total_count": 20000, "total_amount": 1000000000000, "total_news": 400},
+  "period": {"start": "2026-08-29", "end": "2026-09-28"},
+  "by_age": [
+    {"group": "20대이하", "count": 5000, "ratio": 25.0},
+    {"group": "30대", "count": 2000, "ratio": 10.0},
+    {"group": "40대", "count": 3000, "ratio": 15.0},
+    {"group": "50대", "count": 4000, "ratio": 20.0},
+    {"group": "60대", "count": 5000, "ratio": 25.0},
+    {"group": "70대이상", "count": 1000, "ratio": 5.0}
+  ],
+  "by_region": [
+    {"group": "서울", "count": 5800, "amount": 300000000000, "amount_per_case": 51724137, "ratio": 29.0},
+    {"group": "경기남부", "count": 4000, "amount": 200000000000, "amount_per_case": 50000000, "ratio": 20.0},
+    {"group": "부산", "count": 1000, "amount": 50000000000, "amount_per_case": 50000000, "ratio": 5.0},
+    {"group": "인천", "count": 1000, "amount": 50000000000, "amount_per_case": 50000000, "ratio": 5.0},
+    {"group": "경기북부", "count": 1200, "amount": 50000000000, "amount_per_case": 41666666, "ratio": 6.0},
+    {"group": "대구", "count": 800, "amount": 40000000000, "amount_per_case": 50000000, "ratio": 4.0},
+    {"group": "충남", "count": 800, "amount": 40000000000, "amount_per_case": 50000000, "ratio": 4.0},
+    {"group": "대전", "count": 600, "amount": 30000000000, "amount_per_case": 50000000, "ratio": 3.0},
+    {"group": "울산", "count": 500, "amount": 30000000000, "amount_per_case": 60000000, "ratio": 2.5},
+    {"group": "강원", "count": 700, "amount": 30000000000, "amount_per_case": 42857142, "ratio": 3.5},
+    {"group": "충북", "count": 600, "amount": 30000000000, "amount_per_case": 50000000, "ratio": 3.0},
+    {"group": "전북", "count": 500, "amount": 30000000000, "amount_per_case": 60000000, "ratio": 2.5},
+    {"group": "경북", "count": 700, "amount": 30000000000, "amount_per_case": 42857142, "ratio": 3.5},
+    {"group": "경남", "count": 600, "amount": 30000000000, "amount_per_case": 50000000, "ratio": 3.0},
+    {"group": "광주", "count": 400, "amount": 20000000000, "amount_per_case": 50000000, "ratio": 2.0},
+    {"group": "전남", "count": 400, "amount": 20000000000, "amount_per_case": 50000000, "ratio": 2.0},
+    {"group": "세종", "count": 100, "amount": 10000000000, "amount_per_case": 100000000, "ratio": 0.5},
+    {"group": "제주", "count": 300, "amount": 10000000000, "amount_per_case": 33333333, "ratio": 1.5}
+  ],
+  "yearly": [
+    {"year": 2016, "count": 10000, "amount": null},
+    {"year": 2017, "count": 12000, "amount": null},
+    {"year": 2018, "count": 15000, "amount": null},
+    {"year": 2019, "count": 18000, "amount": null},
+    {"year": 2020, "count": 16000, "amount": null},
+    {"year": 2021, "count": 15000, "amount": null},
+    {"year": 2022, "count": 12000, "amount": null},
+    {"year": 2023, "count": 14000, "amount": 500000000000},
+    {"year": 2024, "count": 17000, "amount": 800000000000},
+    {"year": 2025, "count": 20000, "amount": 1000000000000}
+  ],
+  "top_methods": [
+    {"rank": 1, "name": "기관사칭", "count": 150, "ratio": 37.5, "sample": {"title": "[가짜] 검찰 사칭 전화에 3억 피해", "link": "https://example.com/news/1", "date": "2026-09-25"}},
+    {"rank": 2, "name": "스미싱", "count": 120, "ratio": 30.0, "sample": {"title": "[가짜] 추석 택배 문자 주의보", "link": "https://example.com/news/2", "date": "2026-09-20"}},
+    {"rank": 3, "name": "가족·지인사칭", "count": 90, "ratio": 22.5, "sample": {"title": "[가짜] '엄마 폰 고장났어' 메시지 급증", "link": "https://example.com/news/3", "date": "2026-09-18"}}
+  ],
+  "method_counts": {"기관사칭": 150, "가족·지인사칭": 90, "대출빙자": 60, "스미싱": 120, "메신저피싱": 40, "기타": 20},
+  "insights": ["[가짜] 인사이트 문장 1", "[가짜] 인사이트 문장 2"]
+}

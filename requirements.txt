@@ -1,0 +1,10 @@
+flask
+pymongo
+pandas
+matplotlib
+feedparser
+requests
+beautifulsoup4
+notion-client
+schedule
+python-dotenv

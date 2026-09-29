@@ -1,0 +1,13 @@
+# 비밀키
+.env
+
+# 파이썬
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# 개인 설정
+.claude/
+.vscode/
+.idea/
