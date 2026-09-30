@@ -97,22 +97,7 @@ def save(docs):
         json.dump(docs, f, ensure_ascii=False, indent=2)
 
 
-#if __name__ == "__main__":
-#    print(len(load_age()))
-
-'''
 if __name__ == "__main__":
     docs = load_age() + load_region()
     save(docs)
     print("stats 저장 완료:", len(docs), "개 (240개면 정상)")
-'''
-
-if __name__ == "__main__":
-    print("age 개수:", len(load_age()))      # 60
-    print("region 개수:", len(load_region()))  # 180
-
-if __name__ == "__main__":
-    docs = load_age() + load_region()
-    print("age 개수:", len(load_age()))      # 60
-    print("region 개수:", len(load_region()))  # 180
-    print("전체 개수:", len(docs), "개")
