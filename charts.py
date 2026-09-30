@@ -3,39 +3,103 @@
 #
 # 처음에는 가짜 result.json으로 작업한다.
 # 파일 이름은 config의 CHART_AGE, CHART_REGION, CHART_METHODS, CHART_YEARLY를 쓴다.
+
 import os
 import matplotlib.pyplot as plt
 from common import load_result
 from config import CHART_AGE, CHART_REGION, CHART_METHODS, CHART_YEARLY
+
 
 plt.rc("font", family="Malgun Gothic")  # 한글 깨짐 방지 (Windows)
 os.makedirs("static/charts", exist_ok=True)
 
 
 def chart_age(result):
-    # TODO(B2): 그래프 1 - 연령대별 피해 건수 막대그래프 (result["by_age"]) -> CHART_AGE로 저장
-    pass
+    # 연령대별 피해 건수 막대그래프
+    data = result["by_age"]
+
+    groups = [item["group"] for item in data]
+    counts = [item["count"] for item in data]
+
+    plt.figure(figsize=(8, 5))
+    plt.bar(groups, counts)
+
+    plt.title("연령대별 피해 건수")
+    plt.xlabel("연령대")
+    plt.ylabel("피해 건수")
+
+    plt.tight_layout()
+    plt.savefig(CHART_AGE)
+    plt.close()
 
 
 def chart_region(result):
-    # TODO(B2): 그래프 2 - 시도청별 피해금액 가로 막대그래프 (result["by_region"]) -> CHART_REGION
-    # 금액은 원 단위라서 억 원으로 나눠서 그리면 보기 좋다
-    pass
+    # 시도청별 피해금액 가로 막대그래프
+    data = result["by_region"]
+
+    regions = [item["group"] for item in data]
+    amounts = [item["amount"] / 100000000 for item in data]
+
+    plt.figure(figsize=(10, 8))
+    plt.barh(regions, amounts)
+
+    plt.title("지역별 피해 금액")
+    plt.xlabel("피해 금액 (억 원)")
+    plt.ylabel("지역")
+
+    plt.tight_layout()
+    plt.savefig(CHART_REGION)
+    plt.close()
 
 
 def chart_methods(result):
-    # TODO(B2): 그래프 3 - 수법별 기사 수 막대그래프 (result["method_counts"]) -> CHART_METHODS
-    pass
+    # 수법별 기사 수 막대그래프
+    data = result["method_counts"]
+
+    methods = list(data.keys())
+    counts = list(data.values())
+
+    plt.figure(figsize=(9, 5))
+    plt.bar(methods, counts)
+
+    plt.title("수법별 기사 수")
+    plt.xlabel("수법")
+    plt.ylabel("기사 수")
+
+    plt.xticks(rotation=30)
+
+    plt.tight_layout()
+    plt.savefig(CHART_METHODS)
+    plt.close()
 
 
 def chart_yearly(result):
-    # TODO(B2, 선택): 그래프 4 - 연도별 피해 건수 선그래프 (result["yearly"]) -> CHART_YEARLY
-    pass
+    # 연도별 피해 건수 선그래프
+    data = result["yearly"]
+
+    years = [item["year"] for item in data]
+    counts = [item["count"] for item in data]
+
+    plt.figure(figsize=(9, 5))
+    plt.plot(years, counts, marker="o")
+
+    plt.title("연도별 피해 건수")
+    plt.xlabel("연도")
+    plt.ylabel("피해 건수")
+
+    plt.xticks(years)
+
+    plt.tight_layout()
+    plt.savefig(CHART_YEARLY)
+    plt.close()
 
 
 if __name__ == "__main__":
     result = load_result()
+
     chart_age(result)
     chart_region(result)
     chart_methods(result)
+    chart_yearly(result)
+
     print("그래프 저장 완료")
