@@ -12,3 +12,6 @@ venv/
 .vscode/
 .idea/
 CLAUDE.md
+
+# 실행하면 만들어지는 그래프
+static/charts/

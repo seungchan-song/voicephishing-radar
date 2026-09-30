@@ -42,6 +42,7 @@ def chart_region(result):
 
     plt.figure(figsize=(10, 8))
     plt.barh(regions, amounts)
+    plt.gca().invert_yaxis()  # 금액이 큰 지역이 맨 위에 오도록
 
     plt.title("지역별 피해 금액")
     plt.xlabel("피해 금액 (억 원)")
