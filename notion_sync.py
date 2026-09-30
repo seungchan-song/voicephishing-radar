@@ -10,8 +10,17 @@ from config import NOTION_TOKEN, NOTION_DATABASE_ID
 
 
 def add_row(notion, method, date, is_fake):
-    # TODO(B4): notion.pages.create(...)로 method 하나를 Notion DB에 한 줄 추가한다
-    pass
+    notion.pages.create(
+        parent={"database_id": NOTION_DATABASE_ID},
+        properties={
+            "수법": {"title": [{"text": {"content": method["name"]}}]},
+            "기사 수": {"number": method["count"]},
+            "대표 기사": {"url": method["sample"]["link"]},
+            "날짜": {"date": {"start": date}},
+            "가짜 여부": {"checkbox": is_fake},
+        },
+    )
+    print("추가 완료:", method["rank"], method["name"])
 
 
 if __name__ == "__main__":
