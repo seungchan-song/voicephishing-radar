@@ -8,8 +8,8 @@
 <body>
   <header>
     <b>🚨 보이스피싱 레이더</b>
-    <a href="/">대시보드</a>
-    <a href="/news">뉴스 목록</a>
+    <a href="/" {% if request.path == "/" %}class="active"{% endif %}>대시보드</a>
+    <a href="/news" {% if request.path == "/news" %}class="active"{% endif %}>뉴스 목록</a>
   </header>
   <main>
     {% block content %}{% endblock %}
