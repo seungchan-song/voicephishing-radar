@@ -7,97 +7,95 @@
 # - 연령별은 amount가 항상 None
 # - 지역별 amount는 원 단위(억원 x EOK), 2023~2025만 있고 나머지는 None
 # - 전부 240개 (연령 6개 x 10년 + 지역 18곳 x 10년)
-# 노션 5-① 에 실제 CSV로 테스트한 예시 코드가 있으니 참고한다.
+# [B1] 경찰청 CSV 3개 -> MongoDB stats 컬렉션 + data/processed/stats.json
+#   python collect_public.py
 import json
 import pandas as pd
-from config import AGE_CSV, REGION_COUNT_CSV, REGION_AMOUNT_CSV, STATS_JSON, EOK
-from db import get_db, create_indexes
+from config import AGE_CSV, EOK, REGION_AMOUNT_CSV, REGION_COUNT_CSV, STATS_JSON
+from db import create_indexes, get_db
 
 
-def load_age():
-    # TODO(B1): 연령별 CSV를 읽어서 type이 "age"인 문서 60개의 리스트를 돌려준다
-    # 힌트: pd.read_csv(AGE_CSV, encoding="cp949") -> melt
-    # 1. CSV 파일 읽기 (한글 인코딩 cp949)
-    df = pd.read_csv(AGE_CSV, encoding="cp949")
-    
-    # 첫 번째 열 이름을 'year'로 변경 (나머지는 연령대 그룹명)
-    year_col = df.columns[0]
-    df = df.rename(columns={year_col: "year"})
-    
-    # 2. melt를 사용해 가로 구조(연령대 컬럼들)를 세로 구조(group, count)로 변환
-    melted = df.melt(id_vars=["year"], var_name="group", value_name="count")
-    
-    # 3. 요구되는 데이터 구조(dict 목록) 생성
-    results = []
-    for _, row in melted.iterrows():
-        results.append({
-            "type": "age",
-            "year": int(row["year"]),
-            "group": str(row["group"]),
-            "count": int(row["count"]),
-            "amount": None
-        })
-        
-    return results
-
-
-def load_region():
-    # TODO(B1): 지역별 건수 CSV와 금액 CSV를 합쳐서 type이 "region"인 문서 180개의 리스트를 돌려준다
-    # 힌트: 두 CSV를 각각 melt -> merge -> "2025년"을 2025로 -> 금액 x EOK
-    # 1. 건수 CSV, 금액 CSV 읽기
-# 1. 건수, 금액 CSV 읽기
-    df_count = pd.read_csv(REGION_COUNT_CSV, encoding="cp949")
-    df_amount = pd.read_csv(REGION_AMOUNT_CSV, encoding="cp949")
-
-    # 첫 번째 열 이름을 'group'으로 변경
-    df_count = df_count.rename(columns={df_count.columns[0]: "group"})
-    df_amount = df_amount.rename(columns={df_amount.columns[0]: "group"})
-
-    # 2. melt로 가로(연도)를 세로(year, count/amount)로 변환
-    melted_count = df_count.melt(id_vars=["group"], var_name="year", value_name="count")
-    melted_amount = df_amount.melt(id_vars=["group"], var_name="amount_year", value_name="amount")
-
-    # 3. '2025년'에서 '년' 글자를 떼어내고 숫자로 변환
-    melted_count["year"] = melted_count["year"].astype(str).str.replace("년", "").astype(int)
-    melted_amount["year"] = melted_amount["amount_year"].astype(str).str.replace("년", "").astype(int)
-
-    # 4. 연도와 지역을 기준으로 합치기
-    merged = pd.merge(
-        melted_count, 
-        melted_amount[["group", "year", "amount"]], 
-        on=["group", "year"], 
-        how="left"
+def get_all_docs():
+    # 1) 연령별: 연도가 행, 연령대가 열 → "연도·연령대·건수" 한 줄씩으로 펼치기
+    age = pd.read_csv(AGE_CSV, encoding="cp949")
+    age = age.melt(id_vars="구분", var_name="group", value_name="count").rename(
+        columns={"구분": "year"}
     )
+    # "2025년" -> 2025 변환 (안전한 정수 변환)
+    age["year"] = age["year"].astype(str).str.replace("년", "").astype(int)
+    age["type"] = "age"
+    age["amount"] = None  # 연령별 CSV에는 금액이 없음
 
-    # 5. 데이터 구조 생성
-    results = []
-    for _, row in merged.iterrows():
-        amt = row["amount"]
-        amount_val = None if (pd.isna(amt) or amt is None) else int(amt * EOK)
+    # 2) 지역별: 건수 CSV와 금액 CSV를 각각 펼친 뒤 (시도청, 연도) 기준으로 합치기
+    cnt = pd.read_csv(REGION_COUNT_CSV, encoding="cp949").melt(
+        id_vars="시도청", var_name="year", value_name="count"
+    )
+    amt = pd.read_csv(REGION_AMOUNT_CSV, encoding="cp949").melt(
+        id_vars="시도청", var_name="year", value_name="amount"
+    )
+    region = cnt.merge(amt, on=["시도청", "year"], how="left").rename(
+        columns={"시도청": "group"}
+    )
+    region["year"] = (
+        region["year"].astype(str).str.replace("년", "").astype(int)
+    )  # "2025년" → 2025
+    region["type"] = "region"
 
-        results.append({
-            "type": "region",
-            "year": int(row["year"]),
-            "group": str(row["group"]),
-            "count": int(row["count"]),
-            "amount": amount_val
-        })
+    # 3) 하나로 합쳐서 문서 목록으로 만들기
+    docs = pd.concat([age, region])[
+        ["type", "year", "group", "count", "amount"]
+    ].to_dict("records")
+    for d in docs:  # 금액: 억원 → 원, 없으면 None
+        d["amount"] = (
+            None if pd.isna(d["amount"]) else int(d["amount"]) * 100_000_000
+        )
 
-    return results
+    return docs
 
 
 def save(docs):
     db = get_db()
     create_indexes()
-    db.stats.delete_many({})  # 여러 번 실행해도 중복되지 않게 기존 데이터를 지운다
-    for doc in docs:
-        db.stats.insert_one(dict(doc))  # dict(doc): 원본에 _id가 붙지 않게 복사해서 넣는다
+    db.stats.delete_many({})  # 기존 데이터 초기화
 
+    # MongoDB 저장 (insert_many 사용)
+    if docs:
+        # insert_many 실행 시 원본 dict에 _id가 붙는 것을 방지하기 위해 dict 복사본 전달
+        db.stats.insert_many([dict(d) for d in docs])
+
+    # stats.json 파일 저장
     with open(STATS_JSON, "w", encoding="utf-8") as f:
         json.dump(docs, f, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":
-    docs = load_age() + load_region()
+    # 문서 목록 생성
+    docs = get_all_docs()
+
+    # DB 및 JSON 파일 저장 실행
     save(docs)
-    print("stats 저장 완료:", len(docs), "개 (240개면 정상)")
+
+    # 데이터 개수 확인
+    age_count = sum(1 for d in docs if d["type"] == "age")
+    region_count = sum(1 for d in docs if d["type"] == "region")
+
+    print("age 개수:", age_count)  # 60
+    print("region 개수:", region_count)  # 180
+    print("전체 개수:", len(docs), "개 (240개면 정상)")
+    print("-" * 40)
+
+    # 2025년 데이터 합계 검증
+    age_sum_2025 = sum(
+        d["count"] for d in docs if d["type"] == "age" and d["year"] == 2025
+    )
+    region_sum_2025 = sum(
+        d["count"] for d in docs if d["type"] == "region" and d["year"] == 2025
+    )
+
+    print(f"2025년 연령별 건수 합계: {age_sum_2025:,}건")
+    print(f"2025년 지역별 건수 합계: {region_sum_2025:,}건")
+
+    if age_sum_2025 == 23360 and region_sum_2025 == 23360:
+        print("✅ 검증 성공: 둘 다 23,360건으로 일치합니다!")
+    else:
+        print("❌ 검증 실패: 값을 확인해 보세요.")
