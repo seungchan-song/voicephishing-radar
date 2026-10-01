@@ -65,7 +65,7 @@ h2::before { content: ""; display: inline-block; width: 6px; height: 18px; margi
 /* 그래프 */
 .charts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 /* 그림 파일마다 가로세로 비율이 달라서, 모두 같은 크기의 칸에 넣고 그림은 칸 안에 맞춘다 */
-.charts img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; padding: 10px; background: var(--card); border-radius: 16px; box-shadow: var(--shadow); }
+.charts img { width: 100%; aspect-ratio: 9 / 5; object-fit: contain; padding: 10px; background: var(--card); border-radius: 16px; box-shadow: var(--shadow); }
 
 /* 표 */
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
