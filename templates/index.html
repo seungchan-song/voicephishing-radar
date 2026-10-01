@@ -1,57 +1,91 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="hero">
+  <h1>보이스피싱 레이더</h1>
+  <p>경찰청 통계와 최신 뉴스로 요즘 유행하는 수법을 한눈에 확인하세요.</p>
+</div>
+
 {% if result.is_fake %}
 <p class="banner">⚠️ 가짜 데이터입니다. 화면 확인용이며 발표에 쓰면 안 됩니다.</p>
 {% endif %}
 
+<h2>보이스피싱 현황 요약</h2>
 <div class="cards">
   <div class="card">
-    <p>{{ result.stats_year }}년 피해 건수</p>
-    <h3>{{ "{:,}".format(result.summary.total_count) }}건</h3>
+    <span class="icon">📞</span>
+    <p class="label">피해 건수</p>
+    <p class="value">{{ "{:,}".format(result.summary.total_count) }}건</p>
+    <span class="note">{{ result.stats_year }}년 경찰청 통계</span>
   </div>
   <div class="card">
-    <p>{{ result.stats_year }}년 피해 금액</p>
-    <h3>{{ eok(result.summary.total_amount) }}</h3>
+    <span class="icon">💸</span>
+    <p class="label">피해 금액</p>
+    <p class="value">{{ eok(result.summary.total_amount) }}</p>
+    <span class="note">{{ result.stats_year }}년 경찰청 통계</span>
   </div>
   <div class="card">
-    <p>분석한 뉴스 ({{ result.period.start }} ~ {{ result.period.end }})</p>
-    <h3>{{ result.summary.total_news }}건</h3>
+    <span class="icon">📰</span>
+    <p class="label">분석한 뉴스</p>
+    <p class="value">{{ result.summary.total_news }}건</p>
+    <span class="note">{{ result.period.start }} ~ {{ result.period.end }}</span>
   </div>
 </div>
 
 <h2>요즘 많이 보도된 수법 TOP 3</h2>
-<ol>
+<ol class="cards">
   {% for m in result.top_methods %}
-  <li>
-    <b>{{ m.name }}</b> (기사 {{ m.count }}건)<br>
-    <a href="{{ m.sample.link }}" target="_blank">{{ m.sample.title }}</a> {{ m.sample.date }}
+  <li class="card">
+    <span class="rank">{{ loop.index }}</span><span class="name">{{ m.name }}</span>
+    <p class="count">기사 {{ m.count }}건</p>
+    <a href="{{ m.sample.link }}" target="_blank">{{ m.sample.title }}</a>
+    <span class="date">{{ m.sample.date }}</span>
   </li>
   {% endfor %}
 </ol>
 
 <h2>인사이트</h2>
-<ul>
+<ul class="insights">
   {% for text in result.insights %}
   <li>{{ text }}</li>
   {% endfor %}
 </ul>
 
-<h2>그래프</h2>
+<h2>그래프로 보는 피해 현황과 수법 동향</h2>
+<div class="charts">
 {% for path in charts %}
-<img src="{{ url_for('static', filename=path) }}" width="450">
+<img src="{{ url_for('static', filename=path) }}">
 {% else %}
 <p>아직 그래프가 없습니다. python charts.py 를 실행하면 여기에 나타납니다.</p>
 {% endfor %}
+</div>
 
 <h2>{{ result.stats_year }}년 연령대별 피해</h2>
-<table>
-  <tr><th>연령대</th><th>건수</th><th>비율</th></tr>
-  {% for row in result.by_age %}
-  <tr><td>{{ row.group }}</td><td>{{ "{:,}".format(row.count) }}</td><td>{{ row.ratio }}%</td></tr>
-  {% endfor %}
-</table>
+{# 도넛 차트: 비율을 차례로 더해 가며 conic-gradient(원형 그라데이션) 글자를 만든다 #}
+{% set colors = ["#6366f1", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b", "#f43f5e"] %}
+{% set ns = namespace(start=0, parts=[]) %}
+{% for row in result.by_age %}
+  {% set end = ns.start + row.ratio %}
+  {% set _ = ns.parts.append(colors[loop.index0] ~ " " ~ ns.start ~ "% " ~ end ~ "%") %}
+  {% set ns.start = end %}
+{% endfor %}
+<div class="panel donut-box">
+  <div class="donut" style="background: conic-gradient({{ ns.parts | join(', ') }});">
+    <div class="donut-hole"><span>{{ result.stats_year }}년</span><b>{{ "{:,}".format(result.summary.total_count) }}건</b></div>
+  </div>
+  <table>
+    <tr><th>연령대</th><th>건수</th><th>비율</th></tr>
+    {% for row in result.by_age %}
+    <tr>
+      <td><i class="dot" style="background: {{ colors[loop.index0] }}"></i>{{ row.group }}</td>
+      <td>{{ "{:,}".format(row.count) }}</td>
+      <td>{{ row.ratio }}%</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 
 <h2>{{ result.stats_year }}년 시도청별 피해 (금액 순)</h2>
+<div class="panel">
 <table>
   <tr><th>시도청</th><th>건수</th><th>피해 금액</th><th>1건당 피해액</th></tr>
   {% for row in result.by_region %}
@@ -63,6 +97,7 @@
   </tr>
   {% endfor %}
 </table>
+</div>
 
-<p>분석 시각: {{ result.generated_at }}</p>
+<p class="updated">분석 시각: {{ result.generated_at }}</p>
 {% endblock %}

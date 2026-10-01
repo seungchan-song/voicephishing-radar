@@ -1,11 +1,104 @@
-body { margin: 0; font-family: "Malgun Gothic", sans-serif; background: #f5f5f5; }
-header { padding: 14px 24px; background: #333; color: white; }
-header a { color: white; margin-left: 16px; }
-main { max-width: 900px; margin: 0 auto; padding: 20px; }
-.banner { background: #fff3cd; padding: 10px; border: 1px solid #e0c060; }
-.cards { display: flex; gap: 12px; }
-.card { flex: 1; background: white; padding: 12px 16px; border: 1px solid #ddd; }
-table { border-collapse: collapse; background: white; }
-th, td { border: 1px solid #ddd; padding: 6px 12px; }
-th { background: #eee; }
-li { margin-bottom: 8px; }
+/* 보이스피싱 레이더 화면 스타일 */
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --text: #0f172a;
+  --sub: #64748b;
+  --line: #e8ebf4;
+  --main: #6366f1;      /* 포인트 색 (인디고) */
+  --main-soft: #eef0ff; /* 포인트 색의 연한 버전 */
+  --navy: #0f172a;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(79, 70, 229, 0.07);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: "Pretendard", "Malgun Gothic", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+a { color: inherit; }
+
+/* 맨 위 메뉴 */
+header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 8px; padding: 0 28px; height: 60px; background: var(--navy); color: white; }
+header b { font-size: 18px; margin-right: auto; letter-spacing: -0.3px; }
+header a { color: #aab3c5; text-decoration: none; padding: 7px 14px; border-radius: 999px; font-size: 14px; }
+header a:hover { color: white; background: #1e293b; }
+header a.active { color: white; background: var(--main); }
+
+main { max-width: 1040px; margin: 0 auto; padding: 28px 20px 60px; }
+
+/* 큰 제목 영역 */
+.hero { padding: 28px 30px; margin-bottom: 20px; border-radius: 18px; color: white; background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 60%, #7c3aed 100%); }
+.hero h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: -0.5px; }
+.hero p { margin: 0; color: #dfe3ff; font-size: 14px; }
+
+/* 경고 배너 */
+.banner { margin: 0 0 20px; padding: 12px 16px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; color: #92400e; font-size: 14px; }
+
+/* 소제목 */
+h2 { margin: 40px 0 14px; font-size: 19px; letter-spacing: -0.3px; }
+h2::before { content: ""; display: inline-block; width: 6px; height: 18px; margin-right: 10px; vertical-align: -3px; border-radius: 3px; background: linear-gradient(180deg, #6366f1, #8b5cf6); }
+
+/* 숫자 카드 */
+/* 숫자 카드와 수법 TOP 3 카드는 같은 모양(.card)을 쓴다 */
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 0; margin: 0; list-style: none; }
+.card { background: var(--card); padding: 18px 20px; border-radius: 16px; box-shadow: var(--shadow); }
+.card .label { margin: 0; color: var(--sub); font-size: 13px; }
+.card .value { margin: 6px 0 0; font-size: 28px; font-weight: bold; letter-spacing: -0.5px; }
+.card .note { display: block; margin-top: 4px; color: var(--sub); font-size: 12px; }
+.card .icon { display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center; border-radius: 50%; background: var(--main-soft); font-size: 15px; }
+
+/* 하얀 상자 (표, 목록 등을 담는다) */
+.panel { background: var(--card); padding: 20px 22px; border-radius: 16px; box-shadow: var(--shadow); }
+
+/* 수법 TOP 3 */
+.rank { display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center; border-radius: 50%; background: var(--main); color: white; font-weight: bold; font-size: 14px; }
+.card .name { font-size: 18px; font-weight: bold; margin-left: 8px; }
+.card .count { margin: 10px 0 8px; color: var(--sub); font-size: 13px; }
+.card a { color: var(--text); text-decoration: none; font-size: 14px; }
+.card a:hover { text-decoration: underline; }
+.card .date { display: block; margin-top: 4px; color: var(--sub); font-size: 12px; }
+
+/* 인사이트 */
+.insights { margin: 0; padding: 0; list-style: none; }
+.insights li { padding: 12px 16px; margin-bottom: 8px; background: var(--card); border-radius: 12px; box-shadow: var(--shadow); border-left: 4px solid var(--main); }
+
+/* 그래프 */
+.charts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+/* 그림 파일마다 가로세로 비율이 달라서, 모두 같은 크기의 칸에 넣고 그림은 칸 안에 맞춘다 */
+.charts img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; padding: 10px; background: var(--card); border-radius: 16px; box-shadow: var(--shadow); }
+
+/* 표 */
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { padding: 10px 12px; color: var(--sub); font-weight: normal; font-size: 13px; text-align: right; border-bottom: 2px solid var(--line); }
+td { padding: 11px 12px; text-align: right; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child { text-align: left; font-weight: bold; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8f9ff; }
+
+/* 도넛 차트 (연령대 비율) */
+.donut-box { display: flex; align-items: center; gap: 36px; }
+.donut-box table { flex: 1; }
+.donut { flex: none; width: 220px; height: 220px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.donut-hole { width: 130px; height: 130px; border-radius: 50%; background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.donut-hole span { color: var(--sub); font-size: 12px; }
+.donut-hole b { font-size: 17px; }
+.dot { display: inline-block; width: 10px; height: 10px; margin-right: 8px; border-radius: 50%; }
+
+.updated { margin-top: 30px; color: var(--sub); font-size: 12px; text-align: right; }
+
+/* 뉴스 목록 */
+.tags { margin: 0 0 18px; }
+.tags a { display: inline-block; margin: 0 6px 8px 0; padding: 7px 16px; background: var(--card); border-radius: 999px; box-shadow: var(--shadow); color: var(--text); text-decoration: none; font-size: 14px; }
+.tags a:hover { background: var(--main-soft); }
+.tags a.on { background: var(--main); color: white; }
+ul.news { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+ul.news li { background: var(--card); padding: 16px 20px; border-radius: 14px; box-shadow: var(--shadow); }
+ul.news a.title { font-weight: bold; text-decoration: none; }
+ul.news a.title:hover { color: var(--main); }
+.meta { display: block; margin-top: 6px; color: var(--sub); font-size: 13px; }
+.chip { display: inline-block; margin-left: 4px; padding: 1px 9px; background: var(--main-soft); color: #4338ca; border-radius: 999px; font-size: 12px; }
+
+/* 작은 화면 (휴대폰) */
+@media (max-width: 760px) {
+  .cards, .charts { grid-template-columns: 1fr; }
+  header { padding: 0 14px; }
+  .donut-box { flex-direction: column; }
+}

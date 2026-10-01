@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>보이스피싱 뉴스</h2>
+<div class="hero">
+  <h1>보이스피싱 뉴스</h1>
+  <p>수법을 눌러서 관련 기사만 골라 볼 수 있어요.</p>
+</div>
 
-<p>
-  <a href="/news">전체</a>
+<p class="tags">
+  <a href="/news" {% if not current %}class="on"{% endif %}>전체</a>
   {% for tag in tags %}
-  | <a href="/news?tag={{ tag }}">{% if tag == current %}<b>{{ tag }}</b>{% else %}{{ tag }}{% endif %}</a>
+  <a href="/news?tag={{ tag }}" {% if tag == current %}class="on"{% endif %}>{{ tag }}</a>
   {% endfor %}
 </p>
 
@@ -13,11 +16,14 @@
 <p class="banner">{{ error }}</p>
 {% endif %}
 
-<ul>
+<ul class="news">
   {% for a in articles %}
   <li>
-    <a href="{{ a.link }}" target="_blank">{{ a.title }}</a><br>
-    {{ a.date }} · {{ a.source }} · {{ a.tags | join(", ") }}
+    <a class="title" href="{{ a.link }}" target="_blank">{{ a.title }}</a>
+    <span class="meta">
+      {{ a.date }} · {{ a.source }}
+      {% for t in a.tags %}<span class="chip">{{ t }}</span>{% endfor %}
+    </span>
   </li>
   {% else %}
   <li>아직 저장된 기사가 없습니다. python collect_news.py 를 먼저 실행하세요.</li>
