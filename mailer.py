@@ -8,7 +8,7 @@ import os
 import smtplib
 from email.message import EmailMessage
 from common import load_result
-from config import MAIL_USER, MAIL_PASSWORD, MAIL_TO, CHART_METHODS
+from config import MAIL_USER, MAIL_PASSWORD, MAIL_TO, DASHBOARD_URL
 
 def make_body(result):
     # TODO(B3): 메일 본문(HTML 글자)을 만들어 돌려준다
@@ -64,6 +64,10 @@ def make_body(result):
                 </ul>
             </div>
 
+            <div style="margin-top: 24px; text-align: center;">
+                <a href="{DASHBOARD_URL}" target="_blank" style="display: inline-block; padding: 14px 28px; background-color: #4f46e5; color: white; text-decoration: none; font-weight: bold; border-radius: 8px;">📊 대시보드에서 더 자세히 보기</a>
+            </div>
+
             <hr style="border: none; border-top: 1px solid #eee; margin: 25px 0;">
             <p style="font-size: 12px; color: #888; text-align: center;">
                 본 메일은 보이스피싱 레이더 자동화 시스템에 의해 발송되었습니다.
@@ -114,5 +118,5 @@ if __name__ == "__main__":
     subject = "[보이스피싱 레이더] 요즘 이런 수법을 조심하세요"
     if result["is_fake"]:
         subject = "[테스트] " + subject
-    send_mail(subject, make_body(result), CHART_METHODS)
+    send_mail(subject, make_body(result), None)  # 그래프는 첨부하지 않는다 (대시보드에서 확인)
     print("메일 발송 완료:", MAIL_TO)

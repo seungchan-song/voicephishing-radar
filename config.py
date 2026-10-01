@@ -16,6 +16,8 @@ NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET")
 MAIL_USER = os.getenv("MAIL_USER")  # 네이버 아이디@naver.com
 MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")  # 네이버 비밀번호 (2단계 인증이면 애플리케이션 비밀번호)
 MAIL_TO = os.getenv("MAIL_TO", "")  # 여러 명이면 쉼표로 구분
+# 메일 속 웹 대시보드 링크. 같은 PC에서 시연하면 기본값 그대로 쓴다 (python app.py 를 켜 둬야 열린다)
+DASHBOARD_URL = os.getenv("DASHBOARD_URL", "http://127.0.0.1:5000")
 
 NOTION_TOKEN = os.getenv("NOTION_TOKEN")
 NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
