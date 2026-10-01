@@ -6,10 +6,9 @@
 # B1: latest_year, analyze_age, analyze_region, analyze_yearly
 # P2: analyze_news (완성) 
 # P1: make_result (완성)
-import os
 from datetime import datetime, timedelta
-from common import load_result, save_result
-from config import AGE_GROUPS, RESULT_JSON, TAGS
+from common import save_result
+from config import AGE_GROUPS, TAGS
 from db import get_db
 
 
@@ -249,6 +248,31 @@ def analyze_news():
 
     return total_news, period, top_methods, method_counts
 
+# 통계(경찰청 2025년) 기반 인사이트: 사람이 해석을 써서 고정한다. **...** 로 감싼 부분은 화면에서 강조된다.
+# 숫자는 result.json의 yearly, by_age, by_region으로 확인한 값이다. 통계 연도가 바뀌면 문장도 다시 쓴다.
+STATS_INSIGHTS = [
+    "2023→2025년 피해 건수는 **24%** 늘었지만 금액은 **약 2.8배**(4,473억→1조 2,578억 원)가 됐습니다. "
+    "1건당 피해액이 2,366만→5,384만 원으로 커져, 사기 한 번의 피해가 훨씬 커졌습니다.",
+    "2025년 피해자는 **60대(24.8%)**와 **20대 이하(24.7%)**가 각각 약 4분의 1로 가장 많습니다. "
+    "고령층뿐 아니라 청년층 대상 예방 홍보도 필요합니다.",
+    "**서울과 경기남부**가 2025년 피해 건수의 **46.6%**, 피해 금액의 **50.8%**를 차지합니다. "
+    "서울은 1건당 6,681만 원으로 전국 평균(5,384만 원)보다 1.2배 높습니다.",
+]
+
+
+def make_news_insight(top_methods, total_news):
+    # 뉴스 기반 인사이트: 기사가 바뀔 때마다 숫자를 새로 계산해서 문장을 만든다
+    if total_news == 0 or len(top_methods) < 2:
+        return ""  # 기사가 없으면 문장을 만들지 않는다
+
+    first = top_methods[0]
+    second = top_methods[1]
+    top_count = first["count"] + second["count"]
+    percent = round(top_count / total_news * 100, 1)
+    return (f"최근 뉴스 {total_news:,}건 중 **{first['name']}({first['count']}건)·{second['name']}({second['count']}건)** "
+            f"기사가 **{percent}%**로 가장 많이 보도됐습니다. 보도가 몰린 이 두 수법을 가장 먼저 조심하세요.")
+
+
 def make_result():
     year = latest_year()
     by_age = analyze_age(year)
@@ -262,10 +286,11 @@ def make_result():
     for row in by_region:
         total_amount += row["amount"]
 
-    # 사람이 직접 쓰는 insights는 지우지 않고 이어받는다
-    insights = []
-    if os.path.exists(RESULT_JSON):
-        insights = load_result()["insights"]
+    # 인사이트 = 통계 기반 고정 문장 + 뉴스 기반 자동 문장
+    insights = list(STATS_INSIGHTS)
+    news_insight = make_news_insight(top_methods, total_news)
+    if news_insight:
+        insights.append(news_insight)
 
     return {
         "is_fake": False,

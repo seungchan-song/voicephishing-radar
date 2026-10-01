@@ -46,7 +46,12 @@
 <h2>인사이트</h2>
 <ul class="insights">
   {% for text in result.insights %}
-  <li>{{ text }}</li>
+  {# 문장이 두 개면 첫 문장(사실)과 둘째 문장(의미)을 줄바꿈해서 보여준다 #}
+  {% set parts = text.split('. ', 1) %}
+  <li>
+    <span>{{ (parts[0] ~ ('.' if parts|length > 1 else '')) | emphasize }}</span>
+    {% if parts|length > 1 %}<br><span class="sub">{{ parts[1] | emphasize }}</span>{% endif %}
+  </li>
   {% endfor %}
 </ul>
 

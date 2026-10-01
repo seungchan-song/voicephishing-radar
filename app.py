@@ -3,12 +3,21 @@
 # /      대시보드 (result.json)
 # /news  뉴스 목록 (MongoDB news), /news?tag=기관사칭 처럼 수법으로 거르기
 import os
+import re
 from flask import Flask, render_template, request
+from markupsafe import Markup, escape
 from common import load_result, won_to_eok
 from config import TAGS, CHART_AGE, CHART_REGION, CHART_METHODS, CHART_YEARLY
 from db import get_db
 
 app = Flask(__name__)
+
+
+@app.template_filter("emphasize")
+def emphasize(text):
+    # 문장 속 **강조할 말** 을 <strong>으로 바꾼다
+    safe = str(escape(text))  # 먼저 안전하게 바꾼 뒤에 태그를 넣는다
+    return Markup(re.sub(r"\*\*(.+?)\*\*", lambda m: "<strong>" + m.group(1) + "</strong>", safe))
 
 
 @app.route("/")
