@@ -22,7 +22,7 @@ GOOGLE_RSS = "https://news.google.com/rss/search?q={}&hl=ko&gl=KR&ceid=KR:ko"
 
 
 def fetch_naver(query):
-    # TODO(P2): 네이버 API로 기사를 받아 문서 리스트로 돌려준다 (sort=date, display=100, start 1~1000)
+    # 네이버 API로 기사를 받아 문서 리스트로 돌려준다 (sort=date, display=100, start 1~1000)
 
     # 네이버 API 인증 정보
     headers = {
@@ -86,7 +86,7 @@ def fetch_naver(query):
 
 
 def fetch_google(query):
-    # TODO(P2): feedparser로 구글 RSS를 읽어 문서 리스트로 돌려준다 (body는 "")
+    # feedparser로 구글 RSS를 읽어 문서 리스트로 돌려준다 (body는 "")
     print(f"[구글] '{query}' RSS 수집 중...")
 
     # 검색어를 넣어 구글 뉴스 RSS를 읽어옴
@@ -112,7 +112,7 @@ def fetch_google(query):
 
 
 def crawl_body(url):
-    # TODO(P2): n.news.naver.com 기사 본문 앞부분을 돌려준다. 실패하면 ""
+    # n.news.naver.com 기사 본문 앞부분을 돌려준다. 실패하면 ""
     # 요청 사이에 time.sleep(1)
 
     # 네이버 뉴스 기사가 아니면 본문을 수집하지 않음

@@ -11,7 +11,7 @@ from common import load_result
 from config import MAIL_USER, MAIL_PASSWORD, MAIL_TO, DASHBOARD_URL
 
 def make_body(result):
-    # TODO(B3): 메일 본문(HTML 글자)을 만들어 돌려준다
+    # 메일 본문(HTML 글자)을 만들어 돌려준다
     # 넣을 것: 수법 TOP 3 (result["top_methods"]의 name, count, sample의 title과 link)
     #         "이런 전화·문자는 무조건 끊으세요" 체크리스트
     top_methods = result.get("top_methods", [])
@@ -79,7 +79,7 @@ def make_body(result):
     return html_content
 
 def send_mail(subject, body, image_path):
-    # TODO(B3): EmailMessage로 메일을 만들어 네이버 메일(smtp.naver.com, 465)로 보낸다
+    # EmailMessage로 메일을 만들어 네이버 메일(smtp.naver.com, 465)로 보낸다
     # image_path 파일이 있으면 첨부한다
     # 받는 사람은 쉼표로 나눠서 리스트로 만든다 (공백, 빈 칸은 버린다)
     to_list = []

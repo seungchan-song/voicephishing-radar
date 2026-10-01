@@ -2,10 +2,10 @@
 #   python analysis.py
 #   python check_result.py   <- 형식 검사
 #
-# result.json 모양은 노션 "가짜 result.json"과 똑같아야 한다.
+# result.json 모양은 노션 "데이터 형식 약속"과 똑같아야 한다.
 # B1: latest_year, analyze_age, analyze_region, analyze_yearly
-# P2: analyze_news (완성) 
-# P1: make_result (완성)
+# P2: analyze_news
+# P1: make_result
 from datetime import datetime, timedelta
 from common import save_result
 from config import AGE_GROUPS, TAGS
@@ -13,7 +13,7 @@ from db import get_db
 
 
 def latest_year():
-    # TODO(B1): 금액이 있는 region 문서 중 가장 최근 연도를 돌려준다 (지금은 2025)
+    # 금액이 있는 region 문서 중 가장 최근 연도를 돌려준다 (없으면 2025)
     db = get_db()
     docs = list(db.stats.find({"type": "region", "amount": {"$ne": None}}))
     if not docs:
@@ -22,7 +22,7 @@ def latest_year():
 
 
 def analyze_age(year):
-    # TODO(B1): [{"group": "20대이하", "count": 5770, "ratio": 24.7}, ...] 6개를 돌려준다
+    # [{"group": "20대이하", "count": 5770, "ratio": 24.7}, ...] 6개를 돌려준다
     # 순서는 config.AGE_GROUPS와 같게, ratio는 전체 대비 %(소수 첫째 자리)
     db = get_db()
     docs = list(db.stats.find({"type": "age", "year": year}))
@@ -43,7 +43,7 @@ def analyze_age(year):
 
 
 def analyze_region(year):
-    # TODO(B1): [{"group", "count", "amount", "amount_per_case", "ratio"}, ...] 18개를 돌려준다
+    # [{"group", "count", "amount", "amount_per_case", "ratio"}, ...] 18개를 돌려준다
     # amount가 큰 순서로 정렬, amount_per_case = amount // count
     db = get_db()
     docs = list(db.stats.find({"type": "region", "year": year}))
@@ -75,7 +75,7 @@ def analyze_region(year):
 
 
 def analyze_yearly():
-    # TODO(B1): [{"year": 2016, "count": ..., "amount": None}, ...] 연도별 전국 합계를 돌려준다
+    # [{"year": 2016, "count": ..., "amount": None}, ...] 연도별 전국 합계를 돌려준다
     # region 문서 기준. 그해 금액이 없으면 amount는 None
     db = get_db()
     docs = list(db.stats.find({"type": "region"}))
@@ -101,7 +101,7 @@ def analyze_yearly():
     return results
 
 def analyze_news():
-    # TODO(P2): total_news, period, top_methods, method_counts 4개를 돌려준다
+    # total_news, period, top_methods, method_counts 4개를 돌려준다
     # period = {"start": 가장 오래된 date, "end": 가장 최근 date}
     # method_counts = 분석 대상 태그별 기사 수
     # top_methods = "기타", "무관"을 뺀 상위 3개,

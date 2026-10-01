@@ -11,7 +11,7 @@ from run_all import run
 DEMO = True
 
 def job():
-    # TODO(B3): run(notify=True)를 실행한다. 오류가 나도 스케줄러가 멈추지 않게 try/except로 감싼다
+    # run(notify=True)를 실행한다. 오류가 나도 스케줄러가 멈추지 않게 try/except로 감싼다
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{now_str}] 전체 프로세스(run_all) 자동 실행 시작...")
     
@@ -21,7 +21,7 @@ def job():
     except Exception as e:
         print(f"[{now_str}] ❌ 실행 중 오류 발생 (스케줄러는 계속 유지됨): {e}")
 
-# TODO(B3): DEMO면 schedule.every(1).minutes.do(job), 아니면 schedule.every().monday.at("09:00").do(job)
+# DEMO면 schedule.every(1).minutes.do(job), 아니면 schedule.every().monday.at("09:00").do(job)
 if DEMO:
     schedule.every(1).minutes.do(job)
     print("[시연 모드] 1분 간격으로 스케줄러가 동작합니다.")

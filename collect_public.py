@@ -47,7 +47,7 @@ def get_all_docs():
     ].to_dict("records")
     for d in docs:  # 금액: 억원 → 원, 없으면 None
         d["amount"] = (
-            None if pd.isna(d["amount"]) else int(d["amount"]) * 100_000_000
+            None if pd.isna(d["amount"]) else int(d["amount"]) * EOK
         )
 
     return docs

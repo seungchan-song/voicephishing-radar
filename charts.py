@@ -1,7 +1,6 @@
 # [B2] result.json -> matplotlib 그래프 PNG (static/charts/)
 #   python charts.py
 #
-# 처음에는 가짜 result.json으로 작업한다.
 # 파일 이름은 config의 CHART_AGE, CHART_REGION, CHART_METHODS, CHART_YEARLY를 쓴다.
 
 import os
