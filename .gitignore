@@ -15,3 +15,6 @@ CLAUDE.md
 
 # 실행하면 만들어지는 그래프
 static/charts/
+
+# 실행하면 만들어지는 통계 파일
+data/processed/stats.json
