@@ -1,13 +1,14 @@
-# [B3] result.json -> 가족에게 보내는 보이스피싱 경보 메일 (Gmail)
+# [B3] result.json -> 가족에게 보내는 보이스피싱 경보 메일 (네이버 메일)
 #   python mailer.py
 #
-# .env에 GMAIL_USER, GMAIL_APP_PASSWORD, MAIL_TO(쉼표로 여러 명)를 넣어야 한다.
-# Gmail 앱 비밀번호는 구글 계정에서 2단계 인증을 켠 뒤 만들 수 있다.
+# .env에 MAIL_USER, MAIL_PASSWORD, MAIL_TO(쉼표로 여러 명)를 넣어야 한다.
+# 네이버 메일 설정에서 IMAP/SMTP 사용을 켜야 한다. 2단계 인증을 쓰면 애플리케이션 비밀번호를 넣는다.
+import html
 import os
 import smtplib
 from email.message import EmailMessage
 from common import load_result
-from config import GMAIL_USER, GMAIL_APP_PASSWORD, MAIL_TO, CHART_METHODS
+from config import MAIL_USER, MAIL_PASSWORD, MAIL_TO, CHART_METHODS
 
 def make_body(result):
     # TODO(B3): 메일 본문(HTML 글자)을 만들어 돌려준다
@@ -19,11 +20,11 @@ def make_body(result):
     methods_html = ""
     for item in top_methods:
         rank = item.get("rank", "")
-        name = item.get("name", "")
+        name = html.escape(item.get("name", ""))  # 기사 제목 속 < > 가 HTML로 해석되지 않게 바꾼다
         count = item.get("count", 0)
         sample = item.get("sample", {})
-        title = sample.get("title", "")
-        link = sample.get("link", "#")
+        title = html.escape(sample.get("title", ""))
+        link = html.escape(sample.get("link", "#"))
         
         methods_html += f"""
         <li style="margin-bottom: 15px; padding: 12px; background-color: #f9f9f9; border-left: 4px solid #d9534f; list-style: none;">
@@ -74,12 +75,20 @@ def make_body(result):
     return html_content
 
 def send_mail(subject, body, image_path):
-    # TODO(B3): EmailMessage로 메일을 만들어 Gmail(smtp.gmail.com, 465)로 보낸다
+    # TODO(B3): EmailMessage로 메일을 만들어 네이버 메일(smtp.naver.com, 465)로 보낸다
     # image_path 파일이 있으면 첨부한다
+    # 받는 사람은 쉼표로 나눠서 리스트로 만든다 (공백, 빈 칸은 버린다)
+    to_list = []
+    for address in MAIL_TO.split(","):
+        if address.strip():
+            to_list.append(address.strip())
+    if not to_list or not MAIL_USER or not MAIL_PASSWORD:
+        raise ValueError(".env에 MAIL_USER, MAIL_PASSWORD, MAIL_TO를 모두 넣어야 합니다.")
+
     msg = EmailMessage()
     msg['Subject'] = subject
-    msg['From'] = GMAIL_USER
-    msg['To'] = MAIL_TO
+    msg['From'] = MAIL_USER
+    msg['To'] = ", ".join(to_list)
 
     # HTML 본문 설정
     msg.set_content(body, subtype='html', charset='utf-8')
@@ -95,9 +104,9 @@ def send_mail(subject, body, image_path):
                 filename=os.path.basename(image_path)
             )
 
-    # Gmail SSL 서버 접속 및 메일 발송 (포트 465)
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
+    # 네이버 SSL 서버 접속 및 메일 발송 (포트 465)
+    with smtplib.SMTP_SSL("smtp.naver.com", 465) as server:
+        server.login(MAIL_USER, MAIL_PASSWORD)
         server.send_message(msg)
 
 if __name__ == "__main__":

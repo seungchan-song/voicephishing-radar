@@ -13,8 +13,8 @@ DB_NAME = os.getenv("DB_NAME", "voicephishing")
 NAVER_CLIENT_ID = os.getenv("NAVER_CLIENT_ID")
 NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET")
 
-GMAIL_USER = os.getenv("GMAIL_USER")
-GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD")
+MAIL_USER = os.getenv("MAIL_USER")  # 네이버 아이디@naver.com
+MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")  # 네이버 비밀번호 (2단계 인증이면 애플리케이션 비밀번호)
 MAIL_TO = os.getenv("MAIL_TO", "")  # 여러 명이면 쉼표로 구분
 
 NOTION_TOKEN = os.getenv("NOTION_TOKEN")
